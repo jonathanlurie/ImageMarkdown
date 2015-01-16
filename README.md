@@ -13,6 +13,17 @@ Requirements:
 - They can have a prefix, like DSC_ if they all have the same
 - You must specify the extention, like .jpg
 
+# Plateform
+
+This is supposed to be crossed plateform, at least for the main.py file.
+However, the file ImageMarkdown.sh will work only on OSX and Linux, but since it is just a double-click shortcut to launch python *main.py*, it will not miss so much to Windows users.
+
+# Launch it
+
+On OSX or Linux, just double click on *ImageMarkdown.sh*, then follow the instructions.
+On Windows, launch *python main.py*
+
+
 # Exemple
 
 Here is a list of images you just uploaded to you server, it was done on January 2015:
@@ -30,13 +41,13 @@ http://myurl.com/wp-content/uploads/2015/01/myHolydays-15.jpg
 ### The folder URL is:
 http://myBlog.com/wp-content/uploads/2015/01/
 
-### The prefix is: 
+### The prefix is:
 myHolydays-
 
 ### The first index is:
 11
 
-### The last index is: 
+### The last index is:
 15
 
 ### The file extention is:
