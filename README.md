@@ -57,18 +57,21 @@ myHolydays-
 ### The Output is:
 
 ```
-[![Picture description][1]][1]
-[![Picture description][2]][2]
-[![Picture description][3]][3]
-[![Picture description][4]][4]
-[![Picture description][5]][5]
+[![Picture description][myHolydays-11]][myHolydays-11]
+[![Picture description][myHolydays-12]][myHolydays-12]
+[![Picture description][myHolydays-13]][myHolydays-13]
+[![Picture description][myHolydays-14]][myHolydays-14]
+[![Picture description][myHolydays-15]][myHolydays-15]
 
-  [1]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-11.jpg
-  [2]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-12.jpg
-  [3]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-13.jpg
-  [4]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-14.jpg
-  [5]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-15.jpg
+  [myHolydays-11]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-11.jpg
+  [myHolydays-12]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-12.jpg
+  [myHolydays-13]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-13.jpg
+  [myHolydays-14]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-14.jpg
+  [myHolydays-15]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-15.jpg
 
 ```
+
+As you can see, the ID within square bracket is the filename without extension.
+It could be an incremental integer number, but some editors do it by default when you add a link, so using the filename won't mess with automatic addings.
 
 **Note** This output is automatically copied to your clipboard.

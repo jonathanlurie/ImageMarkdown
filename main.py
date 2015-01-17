@@ -39,11 +39,15 @@ http://myurl.com/myHolydays_3.jpg
 
 '''
 
+# Pyperclip is a crossed plateform library to copy text to clipboard
 import pyperclip
+
+import os
 
 
 # list of images to build
 _imgList = []
+
 
 def inputByIndexAndExtention():
 
@@ -98,7 +102,10 @@ def printImageListMarkdown():
 
     # build the links
     for i in range(0, len(_imgList)):
-        bigStr = bigStr + "[![Picture description][" + str(i+1) + "]][" + str(i+1) + "]\n"
+        #imgId = str(i+1)
+        # the filename without extention is taken as link ID
+        imgId = os.path.splitext(os.path.basename(_imgList[i]))[0]
+        bigStr = bigStr + "[![Picture description][" + imgId + "]][" + imgId + "]\n"
         # [![La photo 2][3]][4]
 
     # split
@@ -106,7 +113,10 @@ def printImageListMarkdown():
 
     # build the references at page bottom
     for i in range(0, len(_imgList)):
-        bigStr = bigStr + "  [" + str(i+1) + "]" + ": " + _imgList[i] + "\n"
+        #imgId = str(i+1)
+        # the filename without extention is taken as link ID
+        imgId = os.path.splitext(os.path.basename(_imgList[i]))[0]
+        bigStr = bigStr + "  [" + imgId + "]" + ": " + _imgList[i] + "\n"
 
 
 
