@@ -53,25 +53,75 @@ myHolydays-
 ### The file extention is:
 .jpg
 
+### The Alternative text
+
+The *alternative text* will be used in case the picture could not be loaded. In addition, it will also be used for the image title. For exemple, you can type:
+My amazing Holidays
+
 
 ### The Output is:
 
 ```
-[![Picture description][myHolydays-11]][myHolydays-11]
-[![Picture description][myHolydays-12]][myHolydays-12]
-[![Picture description][myHolydays-13]][myHolydays-13]
-[![Picture description][myHolydays-14]][myHolydays-14]
-[![Picture description][myHolydays-15]][myHolydays-15]
+[![My amazing Holidays][myHolydays-11]][myHolydays-11]
+[![My amazing Holidays][myHolydays-12]][myHolydays-12]
+[![My amazing Holidays][myHolydays-13]][myHolydays-13]
+[![My amazing Holidays][myHolydays-14]][myHolydays-14]
+[![My amazing Holidays][myHolydays-15]][myHolydays-15]
 
-  [myHolydays-11]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-11.jpg
-  [myHolydays-12]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-12.jpg
-  [myHolydays-13]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-13.jpg
-  [myHolydays-14]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-14.jpg
-  [myHolydays-15]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-15.jpg
+  [myHolydays-11]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-11.jpg "My amazing Holidays"
+  [myHolydays-12]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-12.jpg "My amazing Holidays"
+  [myHolydays-13]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-13.jpg "My amazing Holidays"
+  [myHolydays-14]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-14.jpg "My amazing Holidays"
+  [myHolydays-15]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-15.jpg "My amazing Holidays"
 
 ```
 
 As you can see, the ID within square bracket is the filename without extension.
 It could be an incremental integer number, but some editors do it by default when you add a link, so using the filename won't mess with automatic addings.
+
+Lets describe a bit the output:
+```
+[![My amazing Holidays][myHolydays-11]][myHolydays-11]
+[![My amazing Holidays][myHolydays-12]][myHolydays-12]
+[![My amazing Holidays][myHolydays-13]][myHolydays-13]
+[![My amazing Holidays][myHolydays-14]][myHolydays-14]
+[![My amazing Holidays][myHolydays-15]][myHolydays-15]
+```
+
+This part will display 5 pictures, with the *alternative text* "My amazing Holidays". Actually,
+```
+[My amazing Holidays][myHolydays-11]
+```
+would be enough to display an image, but, we want it clickable with a link to itself (to display it bigger, with Easy Fancy Box for example), so it is surrounded with another layer of square bracket.
+
+
+And the second part:
+```
+[myHolydays-11]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-11.jpg "My amazing Holidays"
+[myHolydays-12]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-12.jpg "My amazing Holidays"
+[myHolydays-13]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-13.jpg "My amazing Holidays"
+[myHolydays-14]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-14.jpg "My amazing Holidays"
+[myHolydays-15]: http://myBlog.com/wp-content/uploads/2015/01/myHolydays-15.jpg "My amazing Holidays"
+```
+
+Is the list of reference where:
+```
+[myHolydays-11]:
+
+```
+is the ID of the picture.
+
+```
+http://myBlog.com/wp-content/uploads/2015/01/myHolydays-11.jpg
+```
+Is the target.
+
+And
+```
+"My amazing Holidays"
+
+```
+is the picture title.
+
 
 **Note** This output is automatically copied to your clipboard.

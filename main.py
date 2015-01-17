@@ -48,6 +48,9 @@ import os
 # list of images to build
 _imgList = []
 
+# default text for the alternative text field of image
+_defaultAltText = "Copyright Jonathan Lurie"
+
 
 def inputByIndexAndExtention():
 
@@ -87,6 +90,15 @@ def inputByIndexAndExtention():
     ext = raw_input('\n4- Type the file extention (ie. .jpg):\n> ')
 
 
+    # Typing alternative text
+    altText = raw_input('\n5- Type the alternative of all image (of leave blank for default):\n> ')
+
+    # replacing the default Alt Text
+    if(altText):
+        global _defaultAltText
+        _defaultAltText = altText
+
+
     # building photo list
     for i in range(firstIndex, lastIndex+1):
         fileURL = folder + prefix + str(i) + ext
@@ -105,7 +117,7 @@ def printImageListMarkdown():
         #imgId = str(i+1)
         # the filename without extention is taken as link ID
         imgId = os.path.splitext(os.path.basename(_imgList[i]))[0]
-        bigStr = bigStr + "[![Picture description][" + imgId + "]][" + imgId + "]\n"
+        bigStr = bigStr + "[![" + str(_defaultAltText) + "][" + imgId + "]][" + imgId + "]\n"
         # [![La photo 2][3]][4]
 
     # split
@@ -116,7 +128,7 @@ def printImageListMarkdown():
         #imgId = str(i+1)
         # the filename without extention is taken as link ID
         imgId = os.path.splitext(os.path.basename(_imgList[i]))[0]
-        bigStr = bigStr + "  [" + imgId + "]" + ": " + _imgList[i] + "\n"
+        bigStr = bigStr + "  [" + imgId + "]" + ": " + _imgList[i] + " \"" + _defaultAltText + "\""  + "\n"
 
 
 
