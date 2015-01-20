@@ -3,4 +3,9 @@
 INSTALL_DIR=$(dirname $0)
 cd $INSTALL_DIR
 
-python main.py
+# adding lib dir to PYHTONPATH
+export PYTHONPATH=$INSTALL_DIR/lib/:$PYTHONPATH
+
+
+python src/main.py $INSTALL_DIR/temporaryData/
+#python src/test_exif.py

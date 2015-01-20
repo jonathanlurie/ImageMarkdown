@@ -42,11 +42,17 @@ http://myurl.com/myHolydays_3.jpg
 # Pyperclip is a crossed plateform library to copy text to clipboard
 import pyperclip
 
+# For reading the exif data
+import exifread
+
 import os
+import sys
+import urllib2
 
 
 # list of images to build
 _imgList = []
+_exifList = []
 
 # default text for the alternative text field of image
 _defaultAltText = "Copyright Jonathan Lurie"
@@ -117,7 +123,8 @@ def printImageListMarkdown():
         #imgId = str(i+1)
         # the filename without extention is taken as link ID
         imgId = os.path.splitext(os.path.basename(_imgList[i]))[0]
-        bigStr = bigStr + "[![" + str(_defaultAltText) + "][" + imgId + "]][" + imgId + "]\n"
+        bigStr = bigStr + _exifList[i] + ("\n")
+        bigStr = bigStr + "[![" + str(_defaultAltText) + "][" + imgId + "]][" + imgId + "]\n\n"
         # [![La photo 2][3]][4]
 
     # split
@@ -145,10 +152,103 @@ def printImageListMarkdown():
     pyperclip.copy(bigStr)
     spam = pyperclip.paste()
 
+
+
+# fetch the images from the web to a local directory
+def fetchImages():
+
+    # get the temp directory
+    tempo = None
+
+    if(len(sys.argv) > 1):
+        if(os.path.isdir(sys.argv[1])):
+            tempo = sys.argv[1]
+
+            print("\nThe image are going to be fetched for exif reading...")
+
+            # fetching every single image to local temp dir
+            for img in _imgList:
+
+                try:
+
+                    # copy the file to local
+                    print("\tFetching " + os.path.basename(img) + " ... "),
+                    distantFile = urllib2.urlopen(img)
+                    localFile = open(os.path.join(tempo, os.path.basename(img)),'wb')
+                    localFile.write(distantFile.read())
+                    localFile.close()
+                    print("DONE")
+
+                    # reading the exif
+                    exifSentence = buildExifSentence(os.path.join(tempo, os.path.basename(img)))
+                    _exifList.append(exifSentence)
+
+                except urllib2.HTTPError as e:
+
+                    print("FAIL! (" + str(e.code) + ")")
+
+
+
+# takes an image file address
+# return a Markdown string of EXIF data
+def buildExifSentence(fileAddress):
+
+    # markdown sentence
+    ms = ""
+
+    # Open image file for reading (binary mode)
+    f = open(fileAddress, 'rb')
+
+    # Return Exif tags
+    tags = exifread.process_file(f)
+
+    # camera model
+    if('Image Model' in tags.keys() ):
+        ms = ms + "**" + str(tags["Image Model"]) + "** "
+
+    if('EXIF LensModel' in tags.keys() ):
+        ms = ms + "with a **" + str(tags["EXIF LensModel"]) + "** lens "
+
+    if('EXIF FocalLength' in tags.keys() ):
+        ms = ms + "at **" + str(tags["EXIF FocalLength"]) + "mm** "
+
+    if('EXIF ExposureTime' in tags.keys() ):
+        ms = ms + ", a speed of **" + str(tags["EXIF ExposureTime"]) + "s** "
+
+    if('EXIF FNumber' in tags.keys() ):
+        fn = str(tags["EXIF FNumber"])
+
+        fnProcessed = None
+
+        # the aperture number is sometimes written as a ratio, we dont want that.
+        if("/" in fn):
+            fratio = fn.split("/")
+            fnProcessed = str(float(fratio[0]) / float(fratio[1]))
+        else:
+            fnProcessed = str(fn)
+
+        ms = ms + ", an aperture of **f/" + fnProcessed + "** "
+
+    if('EXIF ISOSpeedRatings' in tags.keys() ):
+        ms = ms + " and **" + str(tags["EXIF ISOSpeedRatings"]) + "ISO**"
+
+
+
+    f.close()
+
+    return ms
+
+
+
 if __name__ == "__main__":
 
     print("\n------------------------ ImageMarkdown -----------------------------------------\n")
 
 
+    #_imgList.append("http://jonathanlurie.fr/wp-content/uploads/2015/01/DSC9271.jpg")
+    #_imgList.append("http://jonathanlurie.fr/wp-content/uploads/2015/01/DSCF5002-1024x679.jpg")
+
+
     inputByIndexAndExtention()
+    fetchImages()
     printImageListMarkdown()
