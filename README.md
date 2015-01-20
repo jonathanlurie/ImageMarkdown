@@ -125,3 +125,11 @@ is the picture title.
 
 
 **Note** This output is automatically copied to your clipboard.
+
+## TODO
+A **lot** of things, among which:
+
+- update Readme about exif
+- add a local sync folder for faster exif writing (maybe with a setting file)
+- Add a yes/no choice for writing exif
+- clean the terminal screen at launching
