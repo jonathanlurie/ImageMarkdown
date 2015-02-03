@@ -45,18 +45,29 @@ import pyperclip
 # For reading the exif data
 import exifread
 
+# for config file
+from ConfigParser import *
+
 import os
 import sys
 import urllib2
+import glob
 
 
 # list of images to build
 _imgList = []
 _exifList = []
 
-# default text for the alternative text field of image
-_defaultAltText = "Copyright Jonathan Lurie"
+# taken from settings.ini file
+_tempFolder = None
+_localImageFolder = None
+_writeEXIF = False
 
+# default text for the alternative text field of image
+_defaultAltText = None
+
+# image file default extention
+_defaultImgExtension = None
 
 def inputByIndexAndExtention():
 
@@ -93,11 +104,15 @@ def inputByIndexAndExtention():
 
 
     # typing the extention
-    ext = raw_input('\n4- Type the file extention (ie. .jpg):\n> ')
+    ext = raw_input('\n4- Type the file extention (leave blank for default: ' + _defaultImgExtension + '):\n> ')
+
+    # replacing the default extention
+    if(not ext):
+        ext = _defaultImgExtension
 
 
     # Typing alternative text
-    altText = raw_input('\n5- Type the alternative of all image (of leave blank for default):\n> ')
+    altText = raw_input('\n5- Type the alternative of all image (default: ' + _defaultAltText + '):\n> ')
 
     # replacing the default Alt Text
     if(altText):
@@ -123,7 +138,11 @@ def printImageListMarkdown():
         #imgId = str(i+1)
         # the filename without extention is taken as link ID
         imgId = os.path.splitext(os.path.basename(_imgList[i]))[0]
-        bigStr = bigStr + _exifList[i] + ("\n")
+
+        # is there exif for this image?
+        if(_writeEXIF and _exifList and _exifList[i]):
+            bigStr = bigStr + _exifList[i] + ("\n")
+
         bigStr = bigStr + "[![" + str(_defaultAltText) + "][" + imgId + "]][" + imgId + "]\n\n"
         # [![La photo 2][3]][4]
 
@@ -139,15 +158,18 @@ def printImageListMarkdown():
 
 
 
-
-    print("\t\t OUTPUT")
+    """
+    print("\n\t\t OUTPUT")
     print("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n\n")
 
     print(bigStr)
 
     print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *")
     print("\t\t END OF OUTPUT")
-    print("NOTE: this was automatically copied to your clipboard.")
+
+    """
+
+    print("\nNOTE: the output Markdown string was automatically copied to your clipboard.")
 
     pyperclip.copy(bigStr)
     spam = pyperclip.paste()
@@ -157,35 +179,49 @@ def printImageListMarkdown():
 # fetch the images from the web to a local directory
 def fetchImages():
 
-    # get the temp directory
-    tempo = None
 
-    if(len(sys.argv) > 1):
-        if(os.path.isdir(sys.argv[1])):
-            tempo = sys.argv[1]
 
-            print("\nThe image are going to be fetched for exif reading...")
+    print("\nLooking for the images on local and remote folders...")
+    # fetching every single image to local temp dir
+    for img in _imgList:
 
-            # fetching every single image to local temp dir
-            for img in _imgList:
+        currentImgAddress = None
 
-                try:
+        # globing the file in the local folder
+        matchingList = glob.glob(_localImageFolder + "/*/" + os.path.basename(img))
 
-                    # copy the file to local
-                    print("\tFetching " + os.path.basename(img) + " ... "),
-                    distantFile = urllib2.urlopen(img)
-                    localFile = open(os.path.join(tempo, os.path.basename(img)),'wb')
-                    localFile.write(distantFile.read())
-                    localFile.close()
-                    print("DONE")
+        # the file was found localy
+        if(matchingList):
+            print( "\tFile " + os.path.basename(img) + " was found locally." )
+            currentImgAddress = matchingList[0]
 
-                    # reading the exif
-                    exifSentence = buildExifSentence(os.path.join(tempo, os.path.basename(img)))
-                    _exifList.append(exifSentence)
+        # the file is not present locally, we have to download it
+        else:
 
-                except urllib2.HTTPError as e:
+            try:
 
-                    print("FAIL! (" + str(e.code) + ")")
+                # copy the file to local
+                print("\tFile " + os.path.basename(img) + " is downloading ... "),
+                distantFile = urllib2.urlopen(img)
+                localFile = open(os.path.join(_tempFolder, os.path.basename(img)),'wb')
+                localFile.write(distantFile.read())
+                localFile.close()
+                print("DONE")
+
+                # making the local file address
+                currentImgAddress = os.path.join(_tempFolder, os.path.basename(img))
+
+            except urllib2.HTTPError as e:
+
+                print("FAIL! (" + str(e.code) + ")")
+
+
+        if(currentImgAddress):
+            # reading the exif
+            exifSentence = buildExifSentence( currentImgAddress )
+            _exifList.append(exifSentence)
+        else:
+            _exifList.append(None)
 
 
 
@@ -207,7 +243,7 @@ def buildExifSentence(fileAddress):
         ms = ms + "**" + str(tags["Image Model"]) + "** "
 
     if('EXIF LensModel' in tags.keys() ):
-        ms = ms + "with a **" + str(tags["EXIF LensModel"]) + "** lens "
+        ms = ms + "& **" + str(tags["EXIF LensModel"]) + "** lens "
 
     if('EXIF FocalLength' in tags.keys() ):
         ms = ms + "at **" + str(tags["EXIF FocalLength"]) + "mm** "
@@ -239,8 +275,37 @@ def buildExifSentence(fileAddress):
     return ms
 
 
+# reads setting file and set global vars
+def readSettings():
+
+    parser = SafeConfigParser()
+    parser.read('settings.ini')
+
+    global _tempFolder
+    global _localImageFolder
+    global _writeEXIF
+    global _defaultAltText
+    global _defaultImgExtension
+
+    try:
+        _tempFolder = parser.get('config', 'tempFolder')
+        _localImageFolder = parser.get('config', 'localImageFolder')
+        _writeEXIFString = parser.get('config', 'writeEXIF')
+
+        if(_writeEXIFString.strip() == "yes"):
+            _writeEXIF = True
+
+        _defaultAltText = parser.get('config', 'defaultAltText')
+        _defaultImgExtension = parser.get('config', 'defaultImgExtension')
+
+    except NoOptionError as e:
+        print e
+
 
 if __name__ == "__main__":
+
+    # cleaning terminal
+    os.system('cls' if os.name == 'nt' else 'clear')
 
     print("\n------------------------ ImageMarkdown -----------------------------------------\n")
 
@@ -248,7 +313,11 @@ if __name__ == "__main__":
     #_imgList.append("http://jonathanlurie.fr/wp-content/uploads/2015/01/DSC9271.jpg")
     #_imgList.append("http://jonathanlurie.fr/wp-content/uploads/2015/01/DSCF5002-1024x679.jpg")
 
+    readSettings()
 
     inputByIndexAndExtention()
-    fetchImages()
+
+    if(_writeEXIF):
+        fetchImages()
+
     printImageListMarkdown()

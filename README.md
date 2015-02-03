@@ -130,6 +130,5 @@ is the picture title.
 A **lot** of things, among which:
 
 - update Readme about exif
-- add a local sync folder for faster exif writing (maybe with a setting file)
-- Add a yes/no choice for writing exif
-- clean the terminal screen at launching
+- update Readme about settings.ini file and its usage
+- add an exception about mandatory fields in settings.ini

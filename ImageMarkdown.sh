@@ -7,5 +7,6 @@ cd $INSTALL_DIR
 export PYTHONPATH=$INSTALL_DIR/lib/:$PYTHONPATH
 
 
-python src/main.py $INSTALL_DIR/temporaryData/
+python src/main.py
 #python src/test_exif.py
+#python src/test_configParser.py
