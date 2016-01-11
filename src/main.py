@@ -69,8 +69,14 @@ _defaultAltText = None
 # image file default extention
 _defaultImgExtension = None
 
-def inputByIndexAndExtention():
+_baseMapUrl = "http://jonathanlurie.fr/maple/display?controls=0"
 
+_biligualSentence = """
+<span class="flag-icon flag-icon-us"></span> <span class="languageLink">[*This article is available in English*][languagelink] </span>
+<span class="flag-icon flag-icon-fr"></span> <span class="languageLink">[*Cet article est disponible en francais*][languagelink]</span>
+"""
+
+def inputByIndexAndExtention():
 
     # input url of containing folder
     folder = raw_input('\n0- Type the folder URL:\n> ')
@@ -131,7 +137,9 @@ def inputByIndexAndExtention():
 
 def printImageListMarkdown():
     # big string that contain all the output
-    bigStr = ''
+    bigStr = _biligualSentence + '\n'
+
+
 
     # build the links
     for i in range(0, len(_imgList)):
@@ -156,6 +164,7 @@ def printImageListMarkdown():
         imgId = os.path.splitext(os.path.basename(_imgList[i]))[0]
         bigStr = bigStr + "  [" + imgId + "]" + ": " + _imgList[i] + " \"" + _defaultAltText + "\""  + "\n"
 
+    bigStr = bigStr + "[languagelink]: http://theLinkHere"
 
 
     """
@@ -218,7 +227,8 @@ def fetchImages():
 
         if(currentImgAddress):
             # reading the exif
-            exifSentence = buildExifSentence( currentImgAddress )
+            #exifSentence = buildExifSentence( currentImgAddress, img )
+            exifSentence = buildExifSentence( currentImgAddress, img)
             _exifList.append(exifSentence)
         else:
             _exifList.append(None)
@@ -227,10 +237,10 @@ def fetchImages():
 
 # takes an image file address
 # return a Markdown string of EXIF data
-def buildExifSentence(fileAddress):
+def buildExifSentence(fileAddress ,  distantUrl = None):
 
     # markdown sentence
-    ms = ""
+    ms = "<span style='font-size: 10pt;' >"
 
     # Open image file for reading (binary mode)
     f = open(fileAddress, 'rb')
@@ -269,6 +279,45 @@ def buildExifSentence(fileAddress):
         ms = ms + " and **" + str(tags["EXIF ISOSpeedRatings"]) + "ISO**"
 
 
+    # add positionning
+    if('EXIF GPS GPSLatitude' in tags.keys()  and 'EXIF GPS GPSLongitude' in tags.keys()):
+
+        # dealing with latitutes
+        latValues = tags["EXIF GPS GPSLatitude"].values
+        latRef = tags["EXIF GPS GPSLatitudeRef"]
+        latInt = float(latValues[0].num)
+        latDec = float(latValues[1].num) / float(latValues[1].den) / 60. + float(latValues[2].num) / float(latValues[2].den) / 3600.
+        lat = latInt + latDec
+
+        if(latRef.values != 'N'):
+            lat = lat * (-1)
+
+
+        # dealing with longitudes
+        lonValues = tags["EXIF GPS GPSLongitude"].values
+        lonRef = tags["EXIF GPS GPSLongitudeRef"]
+        lonInt = float(lonValues[0].num)
+        lonDec = float(lonValues[1].num) / float(lonValues[1].den) / 60. + float(lonValues[2].num) / float(lonValues[2].den) / 3600.
+        lon = lonInt + lonDec
+
+        if(lonRef.values != 'E'):
+            lon = lon * (-1)
+
+
+
+
+
+
+        finalMapUrl = _baseMapUrl + "&image=" + distantUrl
+
+
+        #ms = ms + " [map](" + finalMapUrl + ")"
+        ms = ms + " - <a href='" + finalMapUrl + "' target='_blank'>afficher sur la carte</a>"
+
+
+
+
+    ms = ms + "</span><br>"
 
     f.close()
 
